@@ -32,9 +32,10 @@ public interface ToDoService {
      * Get to do list
      * </p>
      *
+     * @param searchValue
      * @return List<TodoDTO>
      */
-    public List<TodoDTO> doGetToDoList();
+    public List<TodoDTO> doGetToDoList(String searchValue);
 
     /**
      * <h2>doGetValidationMsgForSave</h2>
@@ -76,9 +77,10 @@ public interface ToDoService {
      * Get done todo list
      * </p>
      *
+     * @param doneStatus
      * @return List<TodoDTO>
      */
-    public List<TodoDTO> doGetDoneToDoList();
+    public List<TodoDTO> doGetDoneToDoList(String doneStatus);
 
     /**
      * <h2>doEditToDo</h2>

@@ -80,6 +80,6 @@ public class Todo {
         this.id = todoDTO.getId();
         this.title = todoDTO.getTitle();
         this.description = todoDTO.getDescription();
-        this.doneStatus = (todoDTO.getDoneStatus() == null || todoDTO.getDoneStatus() == "") ? "0" : "1";
+        this.doneStatus = todoDTO.getDoneStatus();
     }
 }

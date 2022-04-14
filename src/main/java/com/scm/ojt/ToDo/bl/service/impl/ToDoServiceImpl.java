@@ -39,11 +39,17 @@ public class ToDoServiceImpl implements ToDoService {
      * Get to do list
      * </p>
      *
+     * @param searchValue
      * @return List<TodoDTO>
      */
     @Override
-    public List<TodoDTO> doGetToDoList() {
-        List<Todo> todoList = this.todoDao.findAll();
+    public List<TodoDTO> doGetToDoList(String searchValue) {
+        List<Todo> todoList = new ArrayList<Todo>();
+        if (searchValue != null && searchValue != "") {
+            todoList = this.todoDao.findTodoBySearchValue(searchValue);
+        } else {
+            todoList = this.todoDao.findAll();
+        }
         List<TodoDTO> todoDtoList = new ArrayList<TodoDTO>();
         for (Todo todo : todoList) {
             TodoDTO todoDto = new TodoDTO(todo);
@@ -140,11 +146,12 @@ public class ToDoServiceImpl implements ToDoService {
      * Get done todo list
      * </p>
      *
+     * @param doneStatus
      * @return List<TodoDTO>
      */
     @Override
-    public List<TodoDTO> doGetDoneToDoList() {
-        List<Todo> doneTodoList = this.todoDao.findByDoneStatus("1");
+    public List<TodoDTO> doGetDoneToDoList(String doneStatus) {
+        List<Todo> doneTodoList = this.todoDao.findByDoneStatus(doneStatus);
         List<TodoDTO> doneTodoDtoList = new ArrayList<TodoDTO>();
         for (Todo todo : doneTodoList) {
             TodoDTO todoDto = new TodoDTO(todo);
