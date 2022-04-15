@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scm.ojt.ToDo.bl.dto.TodoDTO;
@@ -18,6 +20,7 @@ import com.scm.ojt.ToDo.bl.service.ToDoService;
 import com.scm.ojt.ToDo.web.form.TodoListResponse;
 import com.scm.ojt.ToDo.web.form.TodoModifyResponse;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 public class TodoRestController {
@@ -59,12 +62,13 @@ public class TodoRestController {
      * <p>
      * Get to do list
      * </p>
-     *
+     * 
+     * @param searchValue
      * @return ResponseEntity<?>
      */
     @GetMapping(value = "/todoList")
-    public ResponseEntity<?> getToDoList() {
-        List<TodoDTO> todoList = this.todoService.doGetToDoList();
+    public ResponseEntity<?> getToDoList(@RequestParam(required = false) String searchValue) {
+        List<TodoDTO> todoList = this.todoService.doGetToDoList(searchValue);
         String message = "Get todo list successfully!";
         TodoListResponse response = new TodoListResponse(HttpStatus.OK.value(), message);
         response.setTodoList(todoList);
@@ -98,12 +102,13 @@ public class TodoRestController {
      * <p>
      * Get done todo list
      * </p>
-     *
+     * 
+     * @param doneStatus
      * @return ResponseEntity<?>
      */
-    @GetMapping(value = "/doneTodoList")
-    public ResponseEntity<?> getDoneToDoList() {
-        List<TodoDTO> todoList = this.todoService.doGetDoneToDoList();
+    @GetMapping(value = "/getTodoListByStatus")
+    public ResponseEntity<?> getDoneToDoList(String doneStatus) {
+        List<TodoDTO> todoList = this.todoService.doGetDoneToDoList(doneStatus);
         String message = "Get done todo list successfully!";
         TodoListResponse response = new TodoListResponse(HttpStatus.OK.value(), message);
         response.setTodoList(todoList);
@@ -136,6 +141,30 @@ public class TodoRestController {
         }
         TodoDTO todo = this.todoService.doEditToDo(todoDto, id);
         TodoModifyResponse response = new TodoModifyResponse(HttpStatus.CREATED.value(), "Edited todo successfully!");
+        response.setTodoDto(todo);
+        return new ResponseEntity<TodoModifyResponse>(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * <h2>doneEditTodo</h2>
+     * <p>
+     * Edit done status
+     * </p>
+     *
+     * @param id
+     * @return ResponseEntity<?>
+     */
+    @PutMapping("/doneEditTodo")
+    public ResponseEntity<?> doneEditTodo(long id, String doneStatus) {
+        TodoDTO oldTodo = this.todoService.doGetToDoById(id);
+        if (oldTodo == null) {
+            TodoModifyResponse response = new TodoModifyResponse(HttpStatus.BAD_REQUEST.value(),
+                    "Data does not exist!");
+            return new ResponseEntity<TodoModifyResponse>(response, HttpStatus.BAD_REQUEST);
+        }
+        oldTodo.setDoneStatus(doneStatus);
+        TodoDTO todo = this.todoService.doEditToDo(oldTodo, id);
+        TodoModifyResponse response = new TodoModifyResponse(HttpStatus.CREATED.value(), "Edited done statue successfully!");
         response.setTodoDto(todo);
         return new ResponseEntity<TodoModifyResponse>(response, HttpStatus.CREATED);
     }
